@@ -1,0 +1,84 @@
+main {
+    margin: 0;
+}
+
+.header-background {
+    margin-top: -20px;
+    color: #4C5F66;
+    text-align: center;
+    padding-top: 40px;
+}
+.header-background:before {
+    content: " ";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    opacity: .2;
+    z-index: -1;
+    background-image: url(/assets/theme_image/ccp.png);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+
+
+.header-background h1 {
+    font-size: 3em;
+    font-weight: 200;
+}
+.header-background-bar {
+    border-bottom: 1px solid #4C5F66;
+    width: 400px;
+    margin: 18px auto;
+}
+.header-background-sub {
+    font-weight: 200;
+    font-size: 1.8em;
+}
+
+.chart-space {
+    padding-bottom: 60px;
+    padding-top: 60px;
+}
+.chart-bottom-line {
+    border-bottom: 1px solid #cecece7d;
+}
+.chart-inner-block {
+    box-shadow: 9px 17px 60px #afafaf;
+    padding: 35px;
+    background: white;
+}
+.chart-inner-block .smallimg {
+    height: 50px;
+    position: absolute;
+    border-style: none;
+    top: 0;
+    right: 10px;
+}
+
+.chart-text {
+    padding-left: 50px;
+    padding-right: 40px;
+}
+.chart-text h2 {
+    font-size: 2em;
+    font-weight: 300;
+}
+.chart-text p {
+    font-size: 1.3em;
+    font-weight: 300;
+}
+.chart-text a {
+    font-size: 1.2em;
+    color: #dd0505;
+}
+.chart-text a:before {
+    content: '\f08e';
+    font-family: 'FontAwesome';
+    font-size: 1.2em;
+    margin-right: 10px;
+}

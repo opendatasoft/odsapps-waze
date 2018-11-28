@@ -1,0 +1,247 @@
+main {
+    margin: 0;
+}
+
+.header-background {
+    height: 700px;
+    margin-top: -20px;
+    background-image: linear-gradient(to bottom, white 3%, rgba(0, 0, 0, 0.45) 25%), url(/assets/theme_image/timeandroad.jpg);
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: white;
+    text-align: center;
+    padding-top: 280px;
+}
+.header-background h1 {
+    font-size: 5em;
+    color: white;
+    font-weight: 100;
+}
+.header-background-bar {
+    border-bottom: 1px solid white;
+    width: 400px;
+    margin: 18px auto;
+}
+.stories-title {
+    line-height: 150px;
+    margin-left: 65px;
+    font-weight: 100;
+    font-size: 4em;
+}
+.header-background-sub {
+    font-weight: 100;
+    font-size: 1.5em;
+}
+
+
+.text-block {
+    min-height: 120px;
+    margin-top: 50px;
+}
+.text-block h1 {
+    /*margin-bottom: 25px;*/
+}
+.text-block h3 {
+    font-weight: 300;
+    margin: 5px;
+}
+span.subheader {
+    font-weight: 300;
+}
+.no-data-popup {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 6;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.8);
+    margin: 50px 0;
+    padding: 50px;
+    font-weight: 200;
+    font-size: 2em;
+}
+
+
+
+
+
+/* TIME SLIDE */
+.odswidget-timerange {
+    text-align: left;
+}
+.odswidget-timerange__to {
+    display: none;
+}
+.input-range-with-button input {
+    vertical-align: middle;
+}
+input[type=text] {
+    padding: 6px 10px;
+    font-weight: 500;
+    border: 1px solid #d7d7d7;
+}
+.ods-button {
+    border: none;
+    border-radius: 50px;
+    background-color: #fff;
+    font-weight: bold;
+    height: 30px;
+    width: 30px;
+    line-height: 30px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.controlers {
+    display: flex;
+    justify-content: space-between;
+    flex-flow: wrap;
+}
+.controler {
+    display: flex;
+    margin: 2px 15px;
+}
+.controler h3 {
+    font-weight: 500;
+    margin-right: 5px;
+}
+.control-hour input[type=range] {
+    width: 150px;
+}
+.control-hour h3 {
+    width: 100px;
+}
+.control-range input[type=range] {
+    width: 75px;
+}
+.control-range h3 {
+    width: 100px;
+}
+.control-range .input-range-with-button:nth-child(2) {
+    margin-left: 10px;
+}
+.controler .ods-button i.fa {
+    vertical-align: middle;
+}
+.control-range .ods-button i.fa-square {
+    font-size: 0.5em;
+}
+.control-range .ods-button i.fa-ellipsis-h {
+    font-size: 2em;
+}
+.control-range-second-button {
+    margin-left: 10px;
+}
+
+
+/* TOGGLE SWITCH */
+.control-toggle {
+    display: flex;
+    line-height: 26px;
+}
+.toggle-button-label {
+    margin: 0 5px;
+}
+.toggle-button-hint {
+    margin-left: 10px;
+}
+.cmn-toggle {
+    position: absolute;
+    visibility: hidden;
+}
+.cmn-toggle + label {
+    display: block;
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+}
+input.cmn-toggle-round + label {
+    padding: 2px;
+    width: 70px;
+    height: 26px;
+    background-color: #dddddd;
+    border-radius: 60px;
+}
+input.cmn-toggle-round + label:before,
+input.cmn-toggle-round + label:after {
+    display: block;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    bottom: 1px;
+    content: "";
+}
+input.cmn-toggle-round + label:before {
+    right: 1px;
+    background-color: #f1f1f1;
+    border-radius: 60px;
+    transition: background 0.4s;
+}
+input.cmn-toggle-round + label:after {
+    width: 25px;
+    height: 24px;
+    background-color: #fff;
+    border-radius: 100%;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+    transition: margin 0.4s;
+}
+input.cmn-toggle-round:checked + label:before {
+    background-color: #89bbcd;
+}
+input.cmn-toggle-round:checked + label:after {
+    margin-left: 43px;
+}
+
+
+
+
+/* DASHBOARD */
+/* BOX */
+.box {
+    padding-left: 3px;
+    padding-right: 3px;
+}
+.grey-box {
+    background: #f6f6f6;
+    border-radius: 0;
+    padding: 20px;
+    margin-bottom: 6px;
+    height: 418px;
+}
+.grey-box.half-box {
+    height: 206px;
+}
+
+/* BOX CONTENT */
+.title {
+    font-size: 1em;
+    margin: 0 auto;
+}
+.description {
+    margin: 0 auto;
+    color: grey;
+    font-size: 0.7em;
+    font-weight: 100;
+}
+.kpi {
+    font-size: 1.66em;
+    margin-top: 40px;
+    font-weight: 500;
+    text-align: center;
+}
+/* BOX Title Line */
+h2.grey-box {
+    height: 70px;
+    font-size: 1.3em;
+}
+
+/* CHARTS */
+.ods-chart {
+    height: 330px;
+}
+tspan.highcharts-text-outline {
+    display: none;
+}

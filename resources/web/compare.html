@@ -1,0 +1,538 @@
+<div class="header">
+    <div class="header-background">
+        <h1>
+            Compare historical traffic - side by side
+        </h1>
+        <div class="header-background-bar"></div>
+        <div class="header-background-sub">
+            Traffic congestion
+        </div>
+    </div>
+</div>
+
+<ods-dataset-context context="traffica,trafficb"
+
+                     traffica-dataset="traffic-congestion-historical-data"
+                     traffica-parameters="{'q.exclude':'NOT start_time:1970','sort':'-start_time'}"
+
+                     trafficb-dataset="traffic-congestion-historical-data"
+                     trafficb-parameters="{'q.exclude':'NOT start_time:1970','sort':'-start_time'}"
+
+                     ng-init="nb_minute_interval_etat = 15;
+                              trafficadates = {'to': '', 'from': ''};
+                              trafficbdates = {'to': '', 'from': ''};
+                              activescale = 7;
+                              customscale = false;
+                              aggs = {'traffica':{},'trafficb':{}};">
+
+    {{ trafficb.parameters['geofilter.distance'] = traffica.parameters['geofilter.distance']; "" }}
+    {{ trafficb.parameters['geofilter.polygon'] = traffica.parameters['geofilter.polygon']; "" }}
+
+    <div ng-if="traffica.parameters['q.timerange']"
+         ods-aggregation="trafficacount,
+                          trafficasumlength,trafficaavglength,
+                          trafficaavgdelay,trafficasumdelay"
+         ods-aggregation-trafficacount-context="traffica"
+         ods-aggregation-trafficacount-function="COUNT"
+
+         ods-aggregation-trafficasumlength-context="traffica"
+         ods-aggregation-trafficasumlength-function="SUM"
+         ods-aggregation-trafficasumlength-expression="length"
+         ods-aggregation-trafficaavglength-context="traffica"
+         ods-aggregation-trafficaavglength-function="AVG"
+         ods-aggregation-trafficaavglength-expression="length"
+
+         ods-aggregation-trafficasumdelay-context="traffica"
+         ods-aggregation-trafficasumdelay-function="SUM"
+         ods-aggregation-trafficasumdelay-expression="delay"
+         ods-aggregation-trafficaavgdelay-context="traffica"
+         ods-aggregation-trafficaavgdelay-function="AVG"
+         ods-aggregation-trafficaavgdelay-expression="delay">
+        {{
+                aggs['traffica']['count'] = trafficacount;
+                aggs['traffica']['sumlength'] = trafficasumlength;
+                aggs['traffica']['avglength'] = trafficaavglength;
+                aggs['traffica']['sumdelay'] = trafficasumdelay;
+                aggs['traffica']['avgdelay'] = trafficaavgdelay;
+                ""
+                }}
+    </div>
+    <div ng-if="trafficb.parameters['q.timerange']"
+         ods-aggregation="trafficbcount,
+                          trafficbsumlength,trafficbavglength,
+                          trafficbavgdelay,trafficbsumdelay"
+         ods-aggregation-trafficbcount-context="trafficb"
+         ods-aggregation-trafficbcount-function="COUNT"
+
+         ods-aggregation-trafficbsumlength-context="trafficb"
+         ods-aggregation-trafficbsumlength-function="SUM"
+         ods-aggregation-trafficbsumlength-expression="length"
+         ods-aggregation-trafficbavglength-context="trafficb"
+         ods-aggregation-trafficbavglength-function="AVG"
+         ods-aggregation-trafficbavglength-expression="length"
+
+         ods-aggregation-trafficbsumdelay-context="trafficb"
+         ods-aggregation-trafficbsumdelay-function="SUM"
+         ods-aggregation-trafficbsumdelay-expression="delay"
+         ods-aggregation-trafficbavgdelay-context="trafficb"
+         ods-aggregation-trafficbavgdelay-function="AVG"
+         ods-aggregation-trafficbavgdelay-expression="delay">
+        {{
+                aggs['trafficb']['count'] = trafficbcount;
+                aggs['trafficb']['sumlength'] = trafficbsumlength;
+                aggs['trafficb']['avglength'] = trafficbavglength;
+                aggs['trafficb']['sumdelay'] = trafficbsumdelay;
+                aggs['trafficb']['avgdelay'] = trafficbavgdelay;
+                ""
+                }}
+    </div>
+
+
+    <div class="container">
+        <div class="text-block">
+            <h1>
+                Traffic congestion
+            </h1>
+            <h3>
+                Pick a date range on the left, another no the right, and compare in the map or analytic view.
+            </h3>
+        </div>
+
+    </div>
+
+    <div class="container controlers-sticky">
+        <div class="controler-scales">
+            <div class="scale"
+                 ng-click="activescale = 1; customscale = False"
+                 ng-class="{'scale-active' : activescale == 1}">
+                1 day
+            </div>
+            <div class="scale"
+                 ng-click="activescale = 2; customscale = False"
+                 ng-class="{'scale-active' : activescale == 2}">
+                2 days
+            </div>
+            <div class="scale"
+                 ng-click="activescale = 7; customscale = False"
+                 ng-class="{'scale-active' : activescale == 7}">
+                1 week
+            </div>
+            <div class="scale"
+                 ng-click="activescale = 14; customscale = False"
+                 ng-class="{'scale-active' : activescale == 14}">
+                2 weeks
+            </div>
+            <div class="scale"
+                 ng-click="activescale = 28; customscale = False"
+                 ng-class="{'scale-active' : activescale == 28}">
+                4 weeks
+            </div>
+            <div class="scale"
+                 ng-click="customscale = !customscale; activescale = 0"
+                 ng-class="{'scale-active' : customscale}">
+                Custom
+            </div>
+        </div>
+        <div class="col-sm-6 compare-left">
+            <div class="controler-date">
+                <div ods-datetime="now">
+                    <ods-timerange display-time="true"
+                                   label-from="From"
+                                   label-to="To"
+                                   date-format="MM/DD/YYYY HH:mm"
+                                   field="start_time"
+                                   context="traffica"
+                                   default-from="{{ now | momentadd : 'days' : -1 | momentadd : 'weeks' : -2 | moment : 'YYYY-MM-DDT00:00:00Z' }}"
+                                   default-to="{{ now | momentadd : 'days' : -1 | momentadd : 'weeks' : -1 | moment : 'YYYY-MM-DDT23:59:00Z' }}"
+                                   to="trafficadates.to"
+                                   from="trafficadates.from"
+
+                                   ng-class="{'customscale':customscale, 'activescale': (!customscale)}">
+                    </ods-timerange>
+                </div>
+                <div ng-if="!customscale" class="odswidget-timerange__to-custom">
+                    <span class="odswidget-timerange__label">
+                        To
+                    </span>
+                    <span class="odswidget-timerange__input false-input">
+                        {{ (trafficadates.to = (trafficadates.from | momentadd : 'days' : activescale)) | date : 'MM/dd/yyyy HH:mm' }}
+                    </span>
+                </div>
+            </div>
+            {{ trafficanbetats = (trafficadates.to | momentdiff : trafficadates.from : 'minute') / nb_minute_interval_etat ; "" }}
+        </div>
+        <div class="col-sm-6 compare-right">
+            <div class="controler-date">
+                <div ods-datetime="now">
+                    <ods-timerange display-time="true"
+                                   label-from="From"
+                                   label-to="To"
+                                   date-format="MM/DD/YYYY HH:mm"
+                                   field="start_time"
+                                   context="trafficb"
+                                   default-from="{{ now | momentadd : 'days' : -1 | momentadd : 'weeks' : -1 | moment : 'YYYY-MM-DDT00:00:00Z' }}"
+                                   default-to="{{ now | momentadd : 'days' : -1 | momentadd : 'weeks' : 0 | moment : 'YYYY-MM-DDT23:59:00Z' }}"
+                                   to="trafficbdates.to"
+                                   from="trafficbdates.from"
+
+                                   ng-class="{'customscale':customscale, 'activescale': (!customscale)}">
+                    </ods-timerange>
+                </div>
+                <div ng-if="!customscale" class="odswidget-timerange__to-custom">
+                    <span class="odswidget-timerange__label">
+                        To
+                    </span>
+                    <span class="odswidget-timerange__input false-input">
+                        {{ (trafficbdates.to = (trafficbdates.from | momentadd : 'days' : activescale)) | date : 'MM/dd/yyyy HH:mm' }}
+                    </span>
+                </div>
+            </div>
+            {{ trafficbnbetats = (trafficbdates.to | momentdiff : trafficbdates.from : 'minute') / nb_minute_interval_etat ; "" }}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 compare-left">
+            <div class="controlers">
+                <div class="controler control-toggle" ng-init="trafficatoggle=false">
+                    <div class="toggle-button-label">
+                        Map view
+                    </div>
+                    <div class="switch">
+                        <input id="traffic-toggle-1" class="cmn-toggle cmn-toggle-round" type="checkbox">
+                        <label for="traffic-toggle-1" ng-click="trafficatoggle=!trafficatoggle"></label>
+                    </div>
+                    <div class="toggle-button-label">
+                        Table view
+                    </div>
+                    <div class="toggle-button-hint">
+                        <i translate="ods-tooltip"
+                           ods-tooltip="Filter on the map before switching to the table view. Select an area and see all the details for each congestion lines" class="fa fa-info-circle ods-form__help-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="map-layout"
+                 ng-if="!trafficatoggle">
+
+                <div class="no-data-popup"
+                     ng-if="aggs['traffica']['count'] <= 0">
+                    No data available for this date and time selection
+                </div>
+                <ods-map style="height:60vh"
+                         no-refit="true"
+                         scroll-wheel-zoom="false"
+                         toolbar-fullscreen="true"
+                         toolbar-geolocation="true"
+                         basemap="jawg.light" >
+                    <ods-map-layer-group>
+                        <ods-map-layer context="traffica" color="#AD1000" picto="ods-circle" show-marker="true" display="auto" shape-opacity="0.6" point-opacity="1" border-color="#FFFFFF" border-opacity="1" border-size="1" border-pattern="solid" line-width="3" caption="false" title="Traffic congestion - historical data" size="4" size-min="3" size-max="5" size-function="linear">
+
+                            <ul class="tooltip-list">
+
+                                <li class="level level{{record.fields.level}}" ng-if="record.fields.level==5">
+                                    Bumper to bumper traffic
+                                </li>
+                                <li class="level level{{record.fields.level}}" ng-if="record.fields.level==4">
+                                    Heavy traffic
+                                </li>
+                                <li class="level level{{record.fields.level}}" ng-if="record.fields.level==3">
+                                    Moderate traffic
+                                </li>
+                                <li class="level level{{record.fields.level}}" ng-if="record.fields.level==2">
+                                    Moderate traffic
+                                </li>
+                                <li class="level level{{record.fields.level}}" ng-if="record.fields.level==1">
+                                    Traffic
+                                </li>
+
+                                <li>Average speed: <strong>{{ record.fields.speed * 3.6 * 1.60934 | number:0}} mph</strong></li>
+                                <li>Driving time: <strong>{{ (record.fields.delay)/60 | number:0}} minutes</strong></li>
+
+                                <li>
+                                    <strong ng-if="(now | momentdiff : record.fields.start_time : 'minutes') <= 60">
+                                        {{ now | momentdiff : record.fields.start_time : 'minutes' }} minutes
+                                    </strong>
+                                    <strong ng-if="(now | momentdiff : record.fields.start_time : 'minutes') > 60">
+                                        {{ now | momentdiff : record.fields.start_time : 'hours' }} hours
+                                    </strong>
+                                    ago
+                                </li>
+
+                                <hr color="#eee" style="margin: 15px 0px 15px;" width="100%"/>
+
+
+                                <li><strong>{{ record.fields.street}}</strong></li>
+                                <li ng-if="record.fields.start_node">    {{ record.fields.start_node}}</li>
+
+                            </ul>
+
+                        </ods-map-layer>
+                    </ods-map-layer-group>
+                </ods-map>
+            </div>
+            <ods-table ng-if="trafficatoggle"
+                       style="height:60vh"
+                       context="traffica"></ods-table>
+
+        </div>
+
+        <div class="col-sm-6 compare-right">
+            <div class="controlers">
+                <div class="controler control-toggle" ng-init="trafficbtoggle=false">
+                    <div class="toggle-button-label">
+                        Map view
+                    </div>
+                    <div class="switch">
+                        <input id="traffic-toggle-2" class="cmn-toggle cmn-toggle-round" type="checkbox">
+                        <label for="traffic-toggle-2" ng-click="trafficbtoggle=!trafficbtoggle"></label>
+                    </div>
+                    <div class="toggle-button-label">
+                        Table view
+                    </div>
+                    <div class="toggle-button-hint">
+                        <i translate="ods-tooltip"
+                           ods-tooltip="Filter on the map before switching to the table view. Select an area and see all the details for each congestion lines" class="fa fa-info-circle ods-form__help-icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="map-layout"
+                 ng-if="!trafficbtoggle">
+
+                <div class="no-data-popup"
+                     ng-if="aggs['trafficb']['count'] <= 0">
+                    No data available for this date and time selection
+                </div>
+                <ods-map style="height:60vh"
+                         no-refit="true"
+                         scroll-wheel-zoom="false"
+                         toolbar-fullscreen="true"
+                         toolbar-geolocation="true"
+                         toolbar-drawing="false"
+                         basemap="jawg.light" >
+                    <ods-map-layer-group>
+                        <ods-map-layer context="trafficb" color="#AD1000" picto="ods-circle" show-marker="true" display="auto" shape-opacity="0.6" point-opacity="1" border-color="#FFFFFF" border-opacity="1" border-size="1" border-pattern="solid" line-width="3" caption="false" title="Traffic congestion - historical data" size="4" size-min="3" size-max="5" size-function="linear">
+
+                            <ul class="tooltip-list">
+
+                                <li class="level level{{record.fields.level}}" ng-if="record.fields.level==5">
+                                    Bumper to bumper traffic
+                                </li>
+                                <li class="level level{{record.fields.level}}" ng-if="record.fields.level==4">
+                                    Heavy traffic
+                                </li>
+                                <li class="level level{{record.fields.level}}" ng-if="record.fields.level==3">
+                                    Moderate traffic
+                                </li>
+                                <li class="level level{{record.fields.level}}" ng-if="record.fields.level==2">
+                                    Moderate traffic
+                                </li>
+                                <li class="level level{{record.fields.level}}" ng-if="record.fields.level==1">
+                                    Traffic
+                                </li>
+
+                                <li>Average speed: <strong>{{ record.fields.speed * 3.6 * 1.60934 | number:0}} km/h</strong></li>
+                                <li>Driving time: <strong>{{ (record.fields.delay)/60 | number:0}} minutes</strong></li>
+
+                                <li>
+                                    <strong ng-if="(now | momentdiff : record.fields.start_time : 'minutes') <= 60">
+                                        {{ now | momentdiff : record.fields.start_time : 'minutes' }} minutes
+                                    </strong>
+                                    <strong ng-if="(now | momentdiff : record.fields.start_time : 'minutes') > 60">
+                                        {{ now | momentdiff : record.fields.start_time : 'hours' }} hours
+                                    </strong>
+                                    ago
+                                </li>
+
+                                <hr color="#eee" style="margin: 15px 0px 15px;" width="100%"/>
+
+
+                                <li><strong>{{ record.fields.street}}</strong></li>
+                                <li ng-if="record.fields.start_node">    {{ record.fields.start_node}}</li>
+
+                            </ul>
+
+
+                        </ods-map-layer>
+                    </ods-map-layer-group>
+                </ods-map>
+
+            </div>
+            <ods-table ng-if="trafficbtoggle"
+                       style="height:60vh"
+                       context="trafficb"></ods-table>
+
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="text-block">
+            <h1>
+                Compare metrics - side by side
+            </h1>
+        </div>
+    </div>
+
+    <div class="container compare-block">
+        <div class="split"></div>
+
+        <!-- LENGTH -->
+        <div class="row compare-item">
+            <div class="col-sm-offset-2 col-sm-2 compare-item_left">
+                <h2 ng-class="{'compare-item-smaller':aggs['traffica']['avglength']<aggs['trafficb']['avglength']}">
+                    {{ aggs['traffica']['avglength'] / 1000 | number : 2 }}
+                </h2>
+            </div>
+            <div class="col-sm-4 compare-item_middle">
+                <h2>
+                    Average length of a congestion <span class="smaller">(in kilometers)</span>
+                </h2>
+            </div>
+            <div class="col-sm-2 compare-item_right">
+                <h2 ng-class="{'compare-item-smaller':aggs['traffica']['avglength']>aggs['trafficb']['avglength']}">
+                    {{ aggs['trafficb']['avglength'] / 1000 | number : 2 }}
+                </h2>
+            </div>
+        </div>
+        <div class="row compare-item">
+            <div class="col-sm-offset-2 col-sm-2 compare-item_left">
+                <h2 ng-class="{'compare-item-smaller':aggs['traffica']['sumlength']<aggs['trafficb']['sumlength']}">
+                    {{ (aggs['traffica']['sumlength'] / trafficanbetats) / 1000 | number : 1 }}
+                </h2>
+            </div>
+            <div class="col-sm-4 compare-item_middle">
+                <h2>
+                    Average length of congestions <span class="smaller">(in kilometers)</span>
+                </h2>
+            </div>
+            <div class="col-sm-2 compare-item_right">
+                <h2 ng-class="{'compare-item-smaller':aggs['traffica']['sumlength']>aggs['trafficb']['sumlength']}">
+                    {{ (aggs['trafficb']['sumlength'] / trafficbnbetats) / 1000 | number : 1  }}
+                </h2>
+            </div>
+        </div>
+        <div class="row compare-item_description">
+            <h2>
+            </h2>
+        </div>
+
+        <!-- DELAY -->
+        <div class="row compare-item">
+            <div class="col-sm-offset-2 col-sm-2 compare-item_left">
+                <h2 ng-class="{'compare-item-smaller':aggs['traffica']['avgdelay']<aggs['trafficb']['avgdelay']}">
+                    {{ aggs['traffica']['avgdelay'] | number : 1 }}
+                </h2>
+            </div>
+            <div class="col-sm-4 compare-item_middle">
+                <h2>
+                    Average time lost in a congestion <span class="smaller">(in seconds)</span>
+                </h2>
+            </div>
+            <div class="col-sm-2 compare-item_right">
+                <h2 ng-class="{'compare-item-smaller':aggs['traffica']['avgdelay']>aggs['trafficb']['avgdelay']}">
+                    {{ aggs['trafficb']['avgdelay'] | number : 1 }}
+                </h2>
+            </div>
+        </div>
+        <div class="row compare-item">
+            <div class="col-sm-offset-2 col-sm-2 compare-item_left">
+                <h2 ng-class="{'compare-item-smaller':aggs['traffica']['sumdelay']<aggs['trafficb']['sumdelay']}">
+                    {{ aggs['traffica']['sumdelay'] / trafficanbetats | number : 1 }}
+                </h2>
+            </div>
+            <div class="col-sm-4 compare-item_middle">
+                <h2>
+                    Average time lost in all congestions <span class="smaller">(in seconds)</span>
+                </h2>
+            </div>
+            <div class="col-sm-2 compare-item_right">
+                <h2 ng-class="{'compare-item-smaller':aggs['traffica']['sumdelay']>aggs['trafficb']['sumdelay']}">
+                    {{ aggs['trafficb']['sumdelay'] / trafficbnbetats | number : 1 }}
+                </h2>
+            </div>
+        </div>
+        <div class="row compare-item_description">
+            <h2>
+            </h2>
+        </div>
+
+        <!-- COUNT -->
+        <div class="row compare-item">
+            <div class="col-sm-offset-2 col-sm-2 compare-item_left">
+                <h2 ng-class="{'compare-item-smaller':aggs['traffica']['count']<aggs['trafficb']['count']}">
+                    {{ aggs['traffica']['count'] / trafficanbetats | number : 0 }}
+                </h2>
+            </div>
+            <div class="col-sm-4 compare-item_middle">
+                <h2>
+                    Average number of traffic congestion
+                </h2>
+            </div>
+            <div class="col-sm-2 compare-item_right">
+                <h2 ng-class="{'compare-item-smaller':aggs['traffica']['count']>aggs['trafficb']['count']}">
+                    {{ aggs['trafficb']['count'] / trafficbnbetats | number : 0 }}
+                </h2>
+            </div>
+        </div>
+
+        <div class="row compare-item_description">
+            <h2>
+            </h2>
+        </div>
+        <br/><br/><br/>
+
+        <div class="row compare-item_description">
+            <h2>
+                Average length on a typical day like (in kilometers)
+            </h2>
+        </div>
+        <!-- Chart AVG Length -->
+        <ods-chart single-y-axis="true">
+            <ods-chart-query context="traffica" field-x="typical_day_like" maxpoints="0">
+                <ods-chart-serie expression-y="length" chart-type="area" function-y="AVG" label-y="Left selection (in km)" color="#566066" display-values="false" scientific-display="true" multiplier="{{ 1/1000 }}">
+                </ods-chart-serie>
+            </ods-chart-query>
+            <ods-chart-query context="trafficb" field-x="typical_day_like" maxpoints="0">
+                <ods-chart-serie expression-y="length" chart-type="area" function-y="AVG" label-y="Right selection (in km)" color="#C4C7C8" scientific-display="true" multiplier="{{ 1/1000 }}">
+                </ods-chart-serie>
+            </ods-chart-query>
+        </ods-chart>
+
+        <div class="row compare-item_description">
+            <h2>
+                Average delay on a typical day like (in seconds)
+            </h2>
+        </div>
+        <!-- Chart AVG Delay -->
+        <ods-chart single-y-axis="true">
+            <ods-chart-query context="traffica" field-x="typical_day_like" maxpoints="0">
+                <ods-chart-serie expression-y="delay" chart-type="area" function-y="AVG" label-y="Left selection (in sec.)" color="#566066" display-values="false" scientific-display="true">
+                </ods-chart-serie>
+            </ods-chart-query>
+            <ods-chart-query context="trafficb" field-x="typical_day_like" maxpoints="0">
+                <ods-chart-serie expression-y="delay" chart-type="area" function-y="AVG" label-y="Right selection (in sec.)" color="#C4C7C8" scientific-display="true">
+                </ods-chart-serie>
+            </ods-chart-query>
+        </ods-chart>
+
+        <div class="row compare-item_description">
+            <h2>
+                Average speed, on a typical day like
+            </h2>
+        </div>
+        <!-- Chart AVG Speed -->
+        <ods-chart single-y-axis="true">
+            <ods-chart-query context="traffica" field-x="typical_day_like" maxpoints="0">
+                <ods-chart-serie expression-y="speed" chart-type="area" function-y="AVG" label-y="Left selection" color="#566066" display-values="false" scientific-display="true">
+                </ods-chart-serie>
+            </ods-chart-query>
+            <ods-chart-query context="trafficb" field-x="typical_day_like" maxpoints="0">
+                <ods-chart-serie expression-y="speed" chart-type="area" function-y="AVG" label-y="Right selection" color="#C4C7C8" scientific-display="true">
+                </ods-chart-serie>
+            </ods-chart-query>
+        </ods-chart>
+    </div>
+
+
+</ods-dataset-context>

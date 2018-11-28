@@ -1,0 +1,339 @@
+<div class="header">
+    <div class="header-background">
+        <h1>
+            Real time traffic and alerts
+        </h1>
+        <div class="header-background-bar"></div>
+        <div class="header-background-sub">
+            Traffic congestion - User reported alerts
+        </div>
+    </div>
+</div>
+
+<ods-dataset-context context="wazetrafficcongestioninrealtime,wazealertsreportedbyusersinrealtime"
+                     wazetrafficcongestioninrealtime-dataset="waze-traffic-congestion-in-real-time"
+                     wazetrafficcongestioninrealtime-refresh-delay="300000"
+                     wazealertsreportedbyusersinrealtime-dataset="waze-alerts-reported-by-users-in-real-time"
+                     wazealertsreportedbyusersinrealtime-refresh-delay="300000">
+
+    <div class="container">
+        <div class="text-block">
+            <h1>
+                Traffic congestion
+            </h1>
+            <div class="control" ng-init="traffictoggle=false">
+                <div class="toggle-button-label">
+                    Map view
+                </div>
+                <div class="switch">
+                    <input id="traffic-toggle-1" class="cmn-toggle cmn-toggle-round" type="checkbox">
+                    <label for="traffic-toggle-1" ng-click="traffictoggle=!traffictoggle"></label>
+                </div>
+                <div class="toggle-button-label">
+                    Table view
+                </div>
+                <div class="toggle-button-hint">
+                    <i translate="ods-tooltip"
+                       ods-tooltip="Both views are linked. <br/><strong>Filter on the map by selecting an area</strong> to filter  congestion lines on the table view" class="fa fa-info-circle ods-form__help-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ods-map ng-if="!traffictoggle"
+             style="height:70vh"
+             no-refit="true"
+             scroll-wheel-zoom="false"
+             toolbar-fullscreen="true"
+             toolbar-geolocation="true"
+             basemap="jawg.light" >
+        <ods-map-layer-group>
+            <ods-map-layer context="wazetrafficcongestioninrealtime" color-numeric-ranges="{'60':'#BBD5E7','180':'#97AFC2','300':'#738A9E','600':'#2C3F56'}" color-by-field="delay" picto="ods-circle" show-marker="true" display="choropleth" shape-opacity="1" point-opacity="1" border-color="#19630A" border-opacity="1" border-size="4" border-pattern="solid" line-width="3" caption="true" title="Traffic congestion in real time" description="Traffic congestion reported automatically by Waze when a general slow down of vehicules is detected. Update frequency: 5 minutes." size="4">
+
+                <ul class="tooltip-list">
+
+                    <li class="level level{{record.fields.level}}" ng-if="record.fields.level==5">
+                        Bumper to bumper traffic
+                    </li>
+                    <li class="level level{{record.fields.level}}" ng-if="record.fields.level==4">
+                        Heavy traffic
+                    </li>
+                    <li class="level level{{record.fields.level}}" ng-if="record.fields.level==3">
+                        Moderate traffic
+                    </li>
+                    <li class="level level{{record.fields.level}}" ng-if="record.fields.level==2">
+                        Moderate traffic
+                    </li>
+                    <li class="level level{{record.fields.level}}" ng-if="record.fields.level==1">
+                        Traffic
+                    </li>
+
+                    <li>Average speed: <strong>{{ record.fields.speed * 3.6 * 1.60934 | number:0}} mph</strong></li>
+                    <li>Driving time: <strong>{{ (record.fields.delay)/60 | number:0}} minutes</strong></li>
+
+                    <li>
+                        <strong ng-if="(now | momentdiff : record.fields.start_time : 'minutes') <= 60">
+                            {{ now | momentdiff : record.fields.start_time : 'minutes' }} minutes
+                        </strong>
+                        <strong ng-if="(now | momentdiff : record.fields.start_time : 'minutes') > 60">
+                            {{ now | momentdiff : record.fields.start_time : 'hours' }} hours
+                        </strong>
+                        ago
+                    </li>
+
+                    <hr color="#eee" style="margin: 15px 0px 15px;" width="100%"/>
+
+
+                    <li><strong>{{ record.fields.street}}</strong></li>
+                    <li ng-if="record.fields.start_node">    {{ record.fields.start_node}}</li>
+
+                </ul>
+
+
+            </ods-map-layer>
+        </ods-map-layer-group>
+    </ods-map>
+
+    <ods-table ng-if="traffictoggle"
+               style="height:700px"
+               context="wazetrafficcongestioninrealtime"></ods-table>
+
+
+    <div class="container">
+        <div class="text-block">
+            <h1>
+                User alerts
+            </h1>
+            <div class="control" ng-init="usertoggle=false">
+                <div class="toggle-button-label">
+                    Map view
+                </div>
+                <div class="switch">
+                    <input id="user-toggle-1" class="cmn-toggle cmn-toggle-round" type="checkbox">
+                    <label for="user-toggle-1" ng-click="usertoggle=!usertoggle"></label>
+                </div>
+                <div class="toggle-button-label">
+                    Table view
+                </div>
+                <div class="toggle-button-hint">
+                    <i translate="ods-tooltip"
+                       ods-tooltip="Both views are linked. <br/><strong>Filter on the map by selecting an area</strong> to filter  user alerts on the table view" class="fa fa-info-circle ods-form__help-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ods-map ng-if="!usertoggle"
+             style="height:70vh"
+             no-refit="true" scroll-wheel-zoom="false" toolbar-fullscreen="true" toolbar-geolocation="true" basemap="jawg.light" location="11,50.64402,3.02158">
+        <ods-map-layer-group>
+            <ods-map-layer context="wazealertsreportedbyusersinrealtime" color-categories="{'WEATHERHAZARD':'#8EBAD8','ROAD_CLOSED':'#2C3F56','JAM':'#FA8C44','ACCIDENT':'#BA022A'}" color-by-field="type" picto="ods-circle" show-marker="true" display="categories" shape-opacity="0.5" point-opacity="1" border-color="#FFFFFF" border-opacity="1" border-size="1" border-pattern="solid" caption="true" title="Alerts reported by users in real time" description="Objects on road, and other alerts reported by users of the Waze application. Update frequency: 5 minutes." size="4">
+
+                <ul style="display: block; list-style-type: none; color: #000; padding:0; margin:0;font-size:12px;">
+                    <strong style="font-size:14px;">
+                        <li ng-if="record.fields.subtype=='JAM_STAND_STILL_TRAFFIC'">
+                            <hr color="#000" style="height:10px"/>Stand still
+                        </li>
+                        <li ng-if="record.fields.subtype=='JAM_HEAVY_TRAFFIC'">
+                            <hr color="#a99592" style="height:10px"/>Heavy traffic
+                        </li>
+                        <li ng-if="record.fields.subtype=='JAM_MODERATE_TRAFFIC'">
+                            <hr color="#ebb0a7" style="height:10px"/>Moderate traffic
+                        </li>
+                        <li ng-if="record.fields.subtype=='ROAD_CLOSED_EVENT'">
+                            <hr color="#777" style="height:10px"/>Road closed
+                        </li>
+                        <li ng-if="record.fields.subtype=='ACCIDENT_MINOR'">
+                            <hr color="#a99592" style="height:10px"/>Minor accident
+                        </li>
+                        <li ng-if="record.fields.subtype=='ACCIDENT_MAJOR'">
+                            <hr color="#000" style="height:10px"/>Major accident
+                        </li>
+                        <li ng-if="record.fields.subtype=='HAZARD_WEATHER_FOG'">
+                            <hr color="#fae3a7" style="height:10px"/>Weather fog
+                        </li>
+                        <li ng-if="record.fields.subtype=='HAZARD_ON_SHOULDER_CAR_STOPPED'">
+                            <hr color="#fae3a7" style="height:10px"/>Car stopped on the shoulder
+                        </li>
+                        <li ng-if="record.fields.subtype=='HAZARD_ON_SHOULDER_MISSING_SIGN'">
+                            <hr color="#fae3a7" style="height:10px"/>Missing sign on the shoulder
+                        </li>
+                        <li ng-if="record.fields.subtype=='HAZARD_ON_ROAD_CONSTRUCTION'">
+                            <hr color="#fae3a7" style="height:10px"/>Construction on the road
+                        </li>
+                        <li ng-if="record.fields.subtype=='HAZARD_ON_ROAD_ROAD_KILL'">
+                            <hr color="#fae3a7" style="height:10px"/>Road kill
+                        </li>
+                        <li ng-if="record.fields.subtype=='HAZARD_ON_ROAD_CAR_STOPPED'">
+                            <hr color="#fae3a7" style="height:10px"/>Car stopped on the road
+                        </li>
+                        <li ng-if="record.fields.subtype=='HAZARD_ON_ROAD'">
+                            <hr color="#fae3a7" style="height:10px"/>Danger on the road
+                        </li>
+                        <li ng-if="record.fields.subtype=='HAZARD_ON_ROAD_POT_HOLE'">
+                            <hr color="#fae3a7" style="height:10px"/>Pot hole
+                        </li>
+                        <li ng-if="record.fields.subtype=='HAZARD_WEATHER'">
+                            <hr color="#fae3a7" style="height:10px"/>Weather hazard
+                        </li>
+                        <li ng-if="record.fields.subtype=='HAZARD_ON_ROAD_OBJECT'">
+                            <hr color="#fae3a7" style="height:10px"/>Objet on the road
+                        </li>
+                        <li ng-if="record.fields.subtype=='HAZARD_ON_ROAD_TRAFFIC_LIGHT_FAULT'">
+                            <hr color="#fae3a7" style="height:10px"/>Traffic light fault
+                        </li>
+                        <li ng-if="record.fields.subtype=='HAZARD_WEATHER_FLOOD'">
+                            <hr color="#fae3a7" style="height:10px"/>Weather flood
+                        </li>
+                        <li ng-if="record.fields.subtype=='HAZARD_ON_SHOULDER'">
+                            <hr color="#fae3a7" style="height:10px"/>Hazard on the shoulder
+                        </li>
+                    </strong>
+                    <li>On {{ record.fields.street}}
+                        <span ng-if="record.fields.city">in {{record.fields.city}}</span>
+                    </li>
+                    <li>{{ now | momentdiff : record.fields.start_time : 'minutes' }} minutes ago</li>
+                    <hr color="#eee" style="margin: 15px 0px 15px;" width="100%"/>
+                    <div style="display:flex;justify-content:space-between;">
+                        <div>
+                            <li>
+                                <strong>{{ record.fields.street}}</strong>
+                            </li>
+                            <li ng-if="record.fields.city">{{ record.fields.city}}</li>
+                            <li ng-if="!record.fields.city" style="color:transparent;">No city</li>
+                        </div>
+                        <div ng-if="record.fields.type=='JAM'" style="width:24px;height:24px;">
+                            <ods-picto url="'/static/pictos/img/set-v3/pictos/car.svg'"></ods-picto>
+                        </div>
+                        <div ng-if="record.fields.type=='WEATHERHAZARD'" style="width:24px;height:24px;">
+                            <ods-picto url="'/static/pictos/img/set-v3/pictos/accident_panel.svg'"></ods-picto>
+                        </div>
+                        <div ng-if="record.fields.type=='ROAD_CLOSED'" style="width:24px;height:24px;">
+                            <ods-picto url="'/static/pictos/img/set-v3/pictos/roadworks_panel.svg'"></ods-picto>
+                        </div>
+                        <div ng-if="record.fields.type=='ACCIDENT'" style="width:24px;height:24px;">
+                            <ods-picto url="'/static/pictos/img/set-v3/pictos/accident_panel.svg'"></ods-picto>
+                        </div>
+                    </div>
+                </ul>
+
+            </ods-map-layer>
+        </ods-map-layer-group>
+    </ods-map>
+
+
+    <ods-table ng-if="usertoggle"
+               style="height:700px"
+               context="wazealertsreportedbyusersinrealtime"></ods-table>
+
+    <div class="container">
+        <div class="text-block">
+            <h1>
+                Real time statistics
+            </h1>
+        </div>
+
+        <div class="row">
+            <div class="box col-md-4">
+                <div class="grey-box half-box">
+                    <h2 class="title">
+                        Number of traffic congestion
+                    </h2>
+                    <h3 class="description">
+                        -
+                    </h3>
+                    <p class="kpi"
+                       ods-aggregation="agg"
+                       ods-aggregation-context="wazetrafficcongestioninrealtime"
+                       ods-aggregation-function="COUNT" >
+                        {{ agg | number }}
+                    </p>
+                </div>
+                <div class="grey-box half-box">
+                    <h2 class="title">
+                        Total length of congestion
+                    </h2>
+                    <h3 class="description">
+                        in meters
+                    </h3>
+                    <p class="kpi"
+                       ods-aggregation="agg"
+                       ods-aggregation-context="wazetrafficcongestioninrealtime"
+                       ods-aggregation-function="SUM"
+                       ods-aggregation-expression="length">
+                        {{ agg | number : 0 }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="box col-md-8">
+                <div class="grey-box">
+                    <h2 class="title">
+                        Total delay due to congestion per city
+                    </h2>
+                    <h3 class="description">
+                        sum in seconds
+                    </h3>
+                    <ods-chart>
+                        <ods-chart-query context="wazetrafficcongestioninrealtime" field-x="city" maxpoints="0" sort="serie1-1">
+                            <ods-chart-serie expression-y="delay" chart-type="treemap" function-y="SUM" label-y="Total delay (s)" color="range-custom" display-units="false" scientific-display="false">
+                            </ods-chart-serie>
+                        </ods-chart-query>
+                    </ods-chart>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="box col-md-8">
+                <div class="grey-box">
+                    <h2 class="title">
+                        Major reports
+                    </h2>
+                    <h3 class="description">
+                        Top 20
+                    </h3>
+                    <ods-chart display-legend="false" labels-x-length="29">
+                        <ods-chart-query context="wazealertsreportedbyusersinrealtime" field-x="report_description" maxpoints="20" sort="serie1-1">
+                            <ods-chart-serie expression-y="magvar" chart-type="column" function-y="COUNT" label-y="Number of alerts reported" color="#333E45" display-values="false" display-stack-values="false" scientific-display="true">
+                            </ods-chart-serie>
+                        </ods-chart-query>
+                    </ods-chart>
+                </div>
+            </div>
+            <div class="box col-md-4">
+                <div class="grey-box half-box">
+                    <h2 class="title">
+                        Number of active alerts
+                    </h2>
+                    <h3 class="description">
+                        -
+                    </h3>
+                    <p class="kpi"
+                       ods-aggregation="agg"
+                       ods-aggregation-context="wazealertsreportedbyusersinrealtime"
+                       ods-aggregation-function="COUNT" >
+                        {{ agg | number : 0 }}
+                    </p>
+                </div>
+                <div class="grey-box half-box">
+                    <h2 class="title">
+                        Average reliability
+                    </h2>
+                    <h3 class="description">
+                        From 1 to 10
+                    </h3>
+                    <p class="kpi"
+                       ods-aggregation="agg"
+                       ods-aggregation-context="wazealertsreportedbyusersinrealtime"
+                       ods-aggregation-function="AVG"
+                       ods-aggregation-expression="reliability">
+                        {{ agg | number : 0 }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</ods-dataset-context>
